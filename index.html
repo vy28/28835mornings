@@ -152,22 +152,13 @@
       transform: translateX(0);
     }
 
-    /* Desktop: always show sidebar */
+    /* Hamburger visible on all sizes */
     @media (min-width: 768px) {
       #menu-btn {
         display: flex;
       }
-
-      #sidebar {
-        transform: translateX(0);
-      }
-
-      #note-screen {
-        padding-right: 280px;
-      }
     }
 
-    /* Mobile: hamburger toggles sidebar */
     @media (max-width: 767px) {
       #menu-btn {
         display: flex;
@@ -272,6 +263,10 @@
     // ── Notes data ────────────────────────────────────────────
     // Add new notes here — newest first
     const notes = [
+      {
+        date: 'May 15, 2026',
+        content: `Dear Fiz,\n\nI remember when I went to Guadalupe, and Gabe was driving. I just stared out the window and watched the trees passing by. At the time we were just friends, but god I wanted you so bad. I just thought of you, and us, and how perfect you were for me, and how I would try to be as perfect as I could be for you. Whether I'm doing the most fun thing on the planet, or the loneliest thing ever, the only thing on my mind is always you. You're just like the passing trees, grounded, yet always there :)\n\nYours ❤`
+      },
       {
         date: 'May 14, 2026',
         content: `Dear Fiz,\n\nI love when the weather changes. I used to hate rainy, gloomy days, but I love them now. That's because gloomy days mean I get to stay in with you, watch a movie and cuddle up under a warm blanket. The sun means we go out, try a new matcha spot and do something fun. Winters mean a warm cup of hot chocolate and long drives together, and the fall is perfect because we get to go to Mavs games together ;). I guess I like every season now, thank you for changing my mind.\n\nYours`
