@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>28835 Mornings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Nothing+You+Could+Do&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      background-color: #FAF8F6;
+      min-height: 100vh;
+    }
+
+    /* ── Screens ── */
+    .screen {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #FAF8F6;
+      transition: opacity 0.9s ease;
+      padding: 1rem;
+    }
+
+    .screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #countdown-screen { z-index: 2; }
+
+    #note-screen {
+      z-index: 1;
+      opacity: 0;
+    }
+
+    #note-screen.visible {
+      opacity: 1;
+    }
+
+    /* ── Countdown ── */
+    .countdown-time {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: clamp(2.8rem, 10vw, 5rem);
+      color: #000000;
+      letter-spacing: 0.01em;
+      user-select: none;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Flowers ── */
+    .flower {
+      position: absolute;
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      cursor: grab;
+      user-select: none;
+      touch-action: none;
+      transition: filter 0.4s ease;
+      z-index: 5;
+    }
+
+    .flower.matched {
+      filter: drop-shadow(0 0 10px rgba(255, 220, 100, 0.95));
+    }
+
+    .flower:active { cursor: grabbing; }
+
+    /* ── Note card ── */
+    .note-card {
+      border: 1px solid #D8D8D8;
+      padding: clamp(16px, 3vw, 24px);
+      transform: rotate(-3.49deg);
+      width: min(750px, 88vw);
+      max-height: 80vh;
+      overflow: hidden;
+    }
+
+    .note-text {
+      font-family: 'Nothing You Could Do', cursive;
+      font-size: clamp(1rem, 3.2vw, 1.65rem);
+      line-height: 1.65;
+      color: #000000;
+    }
+
+    /* ── Hamburger button ── */
+    #menu-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      padding: 6px;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    #menu-btn.visible {
+      opacity: 1;
+    }
+
+    #menu-btn span {
+      display: block;
+      width: 22px;
+      height: 1.5px;
+      background: #000;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    #menu-btn.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    #menu-btn.open span:nth-child(2) { opacity: 0; }
+    #menu-btn.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    /* ── Sidebar ── */
+    #sidebar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 280px;
+      height: 100%;
+      background: #FAF8F6;
+      border-left: 1px solid #E8E4E0;
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.35s ease;
+      overflow: hidden;
+    }
+
+    #sidebar.open {
+      transform: translateX(0);
+    }
+
+    /* Desktop: always show sidebar */
+    @media (min-width: 768px) {
+      #menu-btn {
+        display: flex;
+      }
+
+      #sidebar {
+        transform: translateX(0);
+      }
+
+      #note-screen {
+        padding-right: 280px;
+      }
+    }
+
+    /* Mobile: hamburger toggles sidebar */
+    @media (max-width: 767px) {
+      #menu-btn {
+        display: flex;
+      }
+    }
+
+    /* Sidebar overlay (mobile) */
+    #sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.15);
+      z-index: 85;
+    }
+
+    #sidebar-overlay.visible {
+      display: block;
+    }
+
+    .sidebar-header {
+      padding: 28px 20px 16px;
+      border-bottom: 1px solid #E8E4E0;
+      flex-shrink: 0;
+    }
+
+    .sidebar-header h2 {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 1.2rem;
+      font-weight: 400;
+      color: #000;
+      letter-spacing: 0.02em;
+    }
+
+    #note-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0;
+    }
+
+    .note-entry {
+      padding: 14px 20px;
+      cursor: pointer;
+      border-bottom: 1px solid #F0EDE9;
+      transition: background 0.2s ease;
+    }
+
+    .note-entry:hover {
+      background: #F3F0EC;
+    }
+
+    .note-entry.active {
+      background: #EDE9E4;
+    }
+
+    .note-entry-date {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 0.78rem;
+      color: #888;
+      margin-bottom: 4px;
+      letter-spacing: 0.03em;
+    }
+
+    .note-entry-preview {
+      font-family: 'Nothing You Could Do', cursive;
+      font-size: 0.82rem;
+      color: #333;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Countdown screen -->
+  <div class="screen" id="countdown-screen">
+    <span class="countdown-time" id="countdown-display">--:--:--</span>
+  </div>
+
+  <!-- Note screen -->
+  <div class="screen" id="note-screen">
+    <div class="note-card">
+      <p class="note-text" id="note-content"></p>
+    </div>
+  </div>
+
+  <!-- Hamburger -->
+  <button id="menu-btn" aria-label="Previous notes">
+    <span></span><span></span><span></span>
+  </button>
+
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <div class="sidebar-header"><h2>Notes</h2></div>
+    <div id="note-list"></div>
+  </div>
+
+  <!-- Mobile overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <script>
+    // ── Notes data ────────────────────────────────────────────
+    // Add new notes here — newest first
+    const notes = [
+      {
+        date: 'May 14, 2026',
+        content: `Dear Fiz,\n\nI love when the weather changes. I used to hate rainy, gloomy days, but I love them now. That's because gloomy days mean I get to stay in with you, watch a movie and cuddle up under a warm blanket. The sun means we go out, try a new matcha spot and do something fun. Winters mean a warm cup of hot chocolate and long drives together, and the fall is perfect because we get to go to Mavs games together ;). I guess I like every season now, thank you for changing my mind.\n\nYours`
+      },
+      {
+        date: 'April 28, 2026',
+        content: `Dear Fiz,\n\nEveryone needs a Fiza in their life. Someone who is your biggest supporter, someone who shows up no matter what, sees right through you and knows exactly how you feel. Someone who cares so deeply about YOU and the people around you. Someone who makes you feel so comfortable being unapologetically yourself. You are everything and more to me my love, and I'm so infinitely grateful.`
+      },
+      {
+        date: 'April 28, 2026',
+        content: `Dear Fiz,\n\nMost days I see something pretty outside, a flower growing in a field that's way prettier than the rest, the sunset, somehow more pretty than it's ever been, a butterfly, flying through the garden, and my mind immediately goes to YOU. I associate everything beautiful, in nature or not, with YOU. My first thought is always "I wish she could see this with me", because I want to share every pretty thing I see, with the prettiest person I know :)`
+      },
+      {
+        date: 'April 24, 2026',
+        content: `Dear Fiz,\n\nEvery day, I live through a million different moments, some of them small like me brushing my teeth, some of them not so small, like finding out good news (rarely), and everyday I find myself wanting you there for all of them, the small ones, the big ones, and especially every moment in between.\n\nYou're worth sharing every moment with, sharing all the time I have with.\n\nYou're worth every. Single. Second.\n\nP.S. Goodmorninnnngggg!!!`
+      },
+    ];
+
+    // ── Render note content ───────────────────────────────────
+    function renderNote(idx) {
+      const note = notes[idx];
+      document.getElementById('note-content').innerHTML =
+        note.content.replace(/\n/g, '<br>');
+      document.querySelectorAll('.note-entry').forEach((el, i) => {
+        el.classList.toggle('active', i === idx);
+      });
+    }
+
+    // ── Build sidebar list ────────────────────────────────────
+    const noteList = document.getElementById('note-list');
+    notes.forEach((note, idx) => {
+      const entry = document.createElement('div');
+      entry.className = 'note-entry' + (idx === 0 ? ' active' : '');
+      entry.innerHTML = `
+        <div class="note-entry-date">${note.date}</div>
+        <div class="note-entry-preview">${note.content.replace(/\n/g, ' ').slice(0, 60)}…</div>
+      `;
+      entry.addEventListener('click', () => {
+        renderNote(idx);
+        // Close sidebar on mobile after selecting
+        if (window.innerWidth < 768) closeSidebar();
+      });
+      noteList.appendChild(entry);
+    });
+
+    // Render first note by default
+    renderNote(0);
+
+    // ── Sidebar toggle ────────────────────────────────────────
+    const menuBtn  = document.getElementById('menu-btn');
+    const sidebar  = document.getElementById('sidebar');
+    const overlay  = document.getElementById('sidebar-overlay');
+
+    function openSidebar()  {
+      sidebar.classList.add('open');
+      overlay.classList.add('visible');
+      menuBtn.classList.add('open');
+    }
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('visible');
+      menuBtn.classList.remove('open');
+    }
+
+    menuBtn.addEventListener('click', () => {
+      sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+    });
+    overlay.addEventListener('click', closeSidebar);
+
+    // Show hamburger when note screen appears
+    function revealMenuBtn() {
+      menuBtn.classList.add('visible');
+    }
+
+    // ── Countdown ─────────────────────────────────────────────
+    const display    = document.getElementById('countdown-display');
+    const cdScreen   = document.getElementById('countdown-screen');
+    const noteScreen = document.getElementById('note-screen');
+
+    function getSecondsUntilNoon() {
+      const now = new Date();
+      const chicagoNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/Chicago' }));
+      const diff = now - chicagoNow;
+      const target = new Date(chicagoNow);
+      target.setHours(12, 30, 0, 0);
+      const targetUTC = new Date(target.getTime() + diff);
+      if (targetUTC <= now) targetUTC.setDate(targetUTC.getDate() + 1);
+      return Math.round((targetUTC - now) / 1000);
+    }
+
+    let remaining = getSecondsUntilNoon();
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+    function formatTime(s) {
+      return `${pad(Math.floor(s / 3600))}:${pad(Math.floor((s % 3600) / 60))}:${pad(s % 60)}`;
+    }
+
+    function showNote() {
+      animating = false;
+      cdScreen.classList.add('hidden');
+      setTimeout(() => {
+        noteScreen.classList.add('visible');
+        revealMenuBtn();
+      }, 50);
+    }
+
+    function tick() {
+      display.textContent = 'Hi Fiz :)';
+      if (remaining === 0) {
+        clearInterval(timer);
+        setTimeout(showNote, 600);
+        return;
+      }
+      remaining--;
+    }
+
+    tick();
+    const timer = setInterval(tick, 1000);
+
+    // ── Flowers ───────────────────────────────────────────────
+    const FLOWER_SIZE = 72;
+    const MATCH_DIST  = 140;
+
+    const flowerData = [
+      { src: 'Orange_flower Medium.png',   color: 'orange' },
+      { src: 'Orange_Flower_2 Medium.png', color: 'orange' },
+      { src: 'Pink_Flower Medium.png',     color: 'pink'   },
+      { src: 'Pink_Flower_2 Medium.png',   color: 'pink'   },
+      { src: 'Purple_Flower Medium.png',   color: 'purple' },
+      { src: 'Purple_Flower_2 Medium.png', color: 'purple' },
+      { src: 'Yellow_Flower Medium.png',   color: 'yellow' },
+      { src: 'Yellow_Flower_2 Medium.png', color: 'yellow' },
+    ];
+
+    const speeds = [0.28, -0.22, 0.18, -0.30, 0.25, -0.18, -0.24, 0.20];
+
+    const flowerEls = [];
+    const fState = flowerData.map((f, i) => {
+      const img = document.createElement('img');
+      img.src = f.src.replace(/ /g, '%20');
+      img.className = 'flower';
+      img.draggable = false;
+      cdScreen.appendChild(img);
+      flowerEls.push(img);
+
+      const margin = FLOWER_SIZE + 30;
+      const W = window.innerWidth, H = window.innerHeight;
+      let x, y;
+      do {
+        x = margin + Math.random() * (W - 2 * margin);
+        y = margin + Math.random() * (H - 2 * margin);
+      } while (Math.abs(x - W/2) < 160 && Math.abs(y - H/2) < 100);
+
+      return {
+        color: f.color, x, y,
+        vx: speeds[i],
+        vy: speeds[(i + 3) % speeds.length],
+        dragging: false, matched: false, snapped: false,
+      };
+    });
+
+    // ── Drag ─────────────────────────────────────────────────
+    let drag = null;
+
+    flowerEls.forEach((el, idx) => {
+      el.addEventListener('mousedown', e => {
+        if (fState[idx].snapped) return;
+        e.preventDefault();
+        drag = { idx, ox: e.clientX - fState[idx].x, oy: e.clientY - fState[idx].y, moved: false };
+        fState[idx].dragging = true;
+        el.style.zIndex = 50;
+        el.style.cursor = 'grabbing';
+      });
+      el.addEventListener('touchstart', e => {
+        if (fState[idx].snapped) return;
+        e.preventDefault();
+        const t = e.touches[0];
+        drag = { idx, ox: t.clientX - fState[idx].x, oy: t.clientY - fState[idx].y, moved: false };
+        fState[idx].dragging = true;
+        el.style.zIndex = 50;
+      }, { passive: false });
+    });
+
+    window.addEventListener('mousemove', e => {
+      if (!drag) return;
+      fState[drag.idx].x = e.clientX - drag.ox;
+      fState[drag.idx].y = e.clientY - drag.oy;
+      drag.moved = true;
+    });
+    window.addEventListener('touchmove', e => {
+      if (!drag) return;
+      e.preventDefault();
+      const t = e.touches[0];
+      fState[drag.idx].x = t.clientX - drag.ox;
+      fState[drag.idx].y = t.clientY - drag.oy;
+      drag.moved = true;
+    }, { passive: false });
+
+    function endDrag() {
+      if (!drag) return;
+      const wasMoved = drag.moved;
+      fState[drag.idx].dragging = false;
+      flowerEls[drag.idx].style.zIndex = '';
+      flowerEls[drag.idx].style.cursor = 'grab';
+      drag = null;
+      if (wasMoved) checkMatches();
+    }
+    window.addEventListener('mouseup', endDrag);
+    window.addEventListener('touchend', endDrag);
+
+    // ── Match detection ───────────────────────────────────────
+    const colors = [...new Set(flowerData.map(f => f.color))];
+
+    function snapTo(f, i, tx, ty) {
+      flowerEls[i].style.transition = 'left 0.35s ease, top 0.35s ease, filter 0.4s ease';
+      f.x = tx; f.y = ty;
+      flowerEls[i].style.left = tx + 'px';
+      flowerEls[i].style.top  = ty + 'px';
+      setTimeout(() => { flowerEls[i].style.transition = 'filter 0.4s ease'; }, 380);
+    }
+
+    function checkMatches() {
+      colors.forEach(color => {
+        const pair = fState.filter(f => f.color === color);
+        if (pair[0].snapped) return;
+        const isNear = Math.hypot(pair[0].x - pair[1].x, pair[0].y - pair[1].y) < MATCH_DIST;
+        if (isNear) {
+          const mx = (pair[0].x + pair[1].x) / 2;
+          const my = (pair[0].y + pair[1].y) / 2;
+          const off = FLOWER_SIZE * 0.3;
+          const i0 = fState.indexOf(pair[0]), i1 = fState.indexOf(pair[1]);
+          snapTo(pair[0], i0, mx - off, my - off);
+          snapTo(pair[1], i1, mx + off, my + off);
+          pair[0].snapped = pair[1].snapped = true;
+          pair[0].matched = pair[1].matched = true;
+          flowerEls[i0].classList.add('matched');
+          flowerEls[i1].classList.add('matched');
+          flowerEls[i0].style.cursor = 'default';
+          flowerEls[i1].style.cursor = 'default';
+        }
+      });
+
+      const allSnapped = colors.every(color =>
+        fState.filter(f => f.color === color).every(f => f.snapped)
+      );
+      if (allSnapped) setTimeout(() => { clearInterval(timer); showNote(); }, 700);
+    }
+
+    // ── Float animation ───────────────────────────────────────
+    let animating = true;
+    function animate() {
+      if (!animating) return;
+      const W = window.innerWidth, H = window.innerHeight;
+      fState.forEach((f, i) => {
+        if (f.snapped) return;
+        if (!f.dragging) {
+          f.x += f.vx; f.y += f.vy;
+          if (f.x <= 0)               { f.x = 0;               f.vx =  Math.abs(f.vx); }
+          if (f.x >= W - FLOWER_SIZE) { f.x = W - FLOWER_SIZE; f.vx = -Math.abs(f.vx); }
+          if (f.y <= 0)               { f.y = 0;               f.vy =  Math.abs(f.vy); }
+          if (f.y >= H - FLOWER_SIZE) { f.y = H - FLOWER_SIZE; f.vy = -Math.abs(f.vy); }
+        }
+        flowerEls[i].style.left = f.x + 'px';
+        flowerEls[i].style.top  = f.y + 'px';
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+
+</body>
+</html>
