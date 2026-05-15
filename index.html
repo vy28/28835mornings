@@ -8,15 +8,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Nothing+You+Could+Do&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    html, body {
-      height: 100%;
-    }
+    html, body { height: 100%; }
 
     body {
       background-color: #FAF8F6;
@@ -28,58 +22,149 @@
       position: fixed;
       inset: 0;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       background-color: #FAF8F6;
       transition: opacity 0.9s ease;
       padding: 1rem;
+      gap: 20px;
     }
 
-    .screen.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
+    .screen.hidden { opacity: 0; pointer-events: none; }
 
-    #countdown-screen { z-index: 2; }
+    #countdown-screen { z-index: 2; justify-content: space-between; padding: 36px 1rem 24px; }
+    #note-screen { z-index: 1; opacity: 0; }
+    #note-screen.visible { opacity: 1; }
 
-    #note-screen {
-      z-index: 1;
-      opacity: 0;
-    }
-
-    #note-screen.visible {
-      opacity: 1;
-    }
-
-    /* ── Countdown ── */
+    /* ── Timer label ── */
     .countdown-time {
       font-family: 'Instrument Serif', Georgia, serif;
-      font-size: clamp(2.8rem, 10vw, 5rem);
-      color: #000000;
+      font-size: clamp(1.6rem, 5vw, 2.4rem);
+      color: #000;
       letter-spacing: 0.01em;
       user-select: none;
-      position: relative;
-      z-index: 1;
+      flex-shrink: 0;
     }
 
-    /* ── Flowers ── */
-    .flower {
-      position: absolute;
-      width: 72px;
-      height: 72px;
-      object-fit: contain;
-      cursor: grab;
+    /* ── Wordle ── */
+    #wordle-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      flex: 1;
+      justify-content: center;
+      width: 100%;
+    }
+
+    #wordle-hint {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 0.78rem;
+      color: #aaa;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    #wordle-grid {
+      display: grid;
+      grid-template-rows: repeat(6, 1fr);
+      gap: 6px;
+    }
+
+    .wordle-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+
+    .wordle-cell {
+      width: clamp(44px, 11vw, 56px);
+      height: clamp(44px, 11vw, 56px);
+      border: 1.5px solid #D8D4CF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: clamp(1.1rem, 3vw, 1.5rem);
+      font-weight: 600;
+      color: #000;
+      text-transform: uppercase;
+      transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
       user-select: none;
-      touch-action: none;
-      transition: filter 0.4s ease;
-      z-index: 5;
     }
 
-    .flower.matched {
-      filter: drop-shadow(0 0 10px rgba(255, 220, 100, 0.95));
+    .wordle-cell.filled { border-color: #999; }
+
+    .wordle-cell.correct  { background: #A8C5A0; border-color: #A8C5A0; color: #fff; }
+    .wordle-cell.present  { background: #C9A96E; border-color: #C9A96E; color: #fff; }
+    .wordle-cell.absent   { background: #C0B8B0; border-color: #C0B8B0; color: #fff; }
+
+    /* pop animation when typing */
+    @keyframes pop {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.12); }
+      100% { transform: scale(1); }
+    }
+    .wordle-cell.pop { animation: pop 0.1s ease; }
+
+    /* flip animation on submit */
+    @keyframes flip {
+      0%   { transform: rotateX(0); }
+      50%  { transform: rotateX(-90deg); }
+      100% { transform: rotateX(0); }
+    }
+    .wordle-cell.flip { animation: flip 0.4s ease forwards; }
+
+    /* ── Message ── */
+    #wordle-msg {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 0.85rem;
+      color: #888;
+      min-height: 1.2em;
+      letter-spacing: 0.03em;
     }
 
-    .flower:active { cursor: grabbing; }
+    /* ── Keyboard ── */
+    #wordle-keyboard {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: center;
+      flex-shrink: 0;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .kb-row {
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+    }
+
+    .kb-key {
+      height: clamp(38px, 8vw, 48px);
+      min-width: clamp(26px, 6.5vw, 36px);
+      padding: 0 4px;
+      border: none;
+      border-radius: 4px;
+      background: #E2DDD8;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: clamp(0.7rem, 2vw, 0.9rem);
+      color: #000;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: background 0.2s ease, color 0.2s ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .kb-key.wide { min-width: clamp(46px, 11vw, 60px); font-size: clamp(0.6rem, 1.6vw, 0.75rem); }
+    .kb-key:active { opacity: 0.7; }
+
+    .kb-key.correct { background: #A8C5A0; color: #fff; }
+    .kb-key.present { background: #C9A96E; color: #fff; }
+    .kb-key.absent  { background: #B0AAA4; color: #fff; }
 
     /* ── Note card ── */
     .note-card {
@@ -95,10 +180,10 @@
       font-family: 'Nothing You Could Do', cursive;
       font-size: clamp(1rem, 3.2vw, 1.65rem);
       line-height: 1.65;
-      color: #000000;
+      color: #000;
     }
 
-    /* ── Hamburger button ── */
+    /* ── Hamburger ── */
     #menu-btn {
       position: fixed;
       top: 20px;
@@ -115,9 +200,7 @@
       transition: opacity 0.4s ease;
     }
 
-    #menu-btn.visible {
-      opacity: 1;
-    }
+    #menu-btn.visible { opacity: 1; }
 
     #menu-btn span {
       display: block;
@@ -134,8 +217,7 @@
     /* ── Sidebar ── */
     #sidebar {
       position: fixed;
-      top: 0;
-      right: 0;
+      top: 0; right: 0;
       width: 280px;
       height: 100%;
       background: #FAF8F6;
@@ -148,24 +230,11 @@
       overflow: hidden;
     }
 
-    #sidebar.open {
-      transform: translateX(0);
-    }
+    #sidebar.open { transform: translateX(0); }
 
-    /* Hamburger visible on all sizes */
-    @media (min-width: 768px) {
-      #menu-btn {
-        display: flex;
-      }
-    }
+    @media (min-width: 768px) { #menu-btn { display: flex; } }
+    @media (max-width: 767px) { #menu-btn { display: flex; } }
 
-    @media (max-width: 767px) {
-      #menu-btn {
-        display: flex;
-      }
-    }
-
-    /* Sidebar overlay (mobile) */
     #sidebar-overlay {
       display: none;
       position: fixed;
@@ -173,10 +242,7 @@
       background: rgba(0,0,0,0.15);
       z-index: 85;
     }
-
-    #sidebar-overlay.visible {
-      display: block;
-    }
+    #sidebar-overlay.visible { display: block; }
 
     .sidebar-header {
       padding: 28px 20px 16px;
@@ -192,11 +258,7 @@
       letter-spacing: 0.02em;
     }
 
-    #note-list {
-      flex: 1;
-      overflow-y: auto;
-      padding: 8px 0;
-    }
+    #note-list { flex: 1; overflow-y: auto; padding: 8px 0; }
 
     .note-entry {
       padding: 14px 20px;
@@ -205,13 +267,8 @@
       transition: background 0.2s ease;
     }
 
-    .note-entry:hover {
-      background: #F3F0EC;
-    }
-
-    .note-entry.active {
-      background: #EDE9E4;
-    }
+    .note-entry:hover { background: #F3F0EC; }
+    .note-entry.active { background: #EDE9E4; }
 
     .note-entry-date {
       font-family: 'Instrument Serif', Georgia, serif;
@@ -233,9 +290,17 @@
 </head>
 <body>
 
-  <!-- Countdown screen -->
+  <!-- Countdown / Wordle screen -->
   <div class="screen" id="countdown-screen">
     <span class="countdown-time" id="countdown-display">--:--:--</span>
+
+    <div id="wordle-wrapper">
+      <div id="wordle-hint">guess the word to unlock today's note</div>
+      <div id="wordle-grid"></div>
+      <div id="wordle-msg"></div>
+    </div>
+
+    <div id="wordle-keyboard"></div>
   </div>
 
   <!-- Note screen -->
@@ -256,12 +321,10 @@
     <div id="note-list"></div>
   </div>
 
-  <!-- Mobile overlay -->
   <div id="sidebar-overlay"></div>
 
   <script>
     // ── Notes data ────────────────────────────────────────────
-    // Add new notes here — newest first
     const notes = [
       {
         date: 'May 15, 2026',
@@ -285,17 +348,15 @@
       },
     ];
 
-    // ── Render note content ───────────────────────────────────
+    // ── Render note ───────────────────────────────────────────
     function renderNote(idx) {
-      const note = notes[idx];
       document.getElementById('note-content').innerHTML =
-        note.content.replace(/\n/g, '<br>');
-      document.querySelectorAll('.note-entry').forEach((el, i) => {
-        el.classList.toggle('active', i === idx);
-      });
+        notes[idx].content.replace(/\n/g, '<br>');
+      document.querySelectorAll('.note-entry').forEach((el, i) =>
+        el.classList.toggle('active', i === idx));
     }
 
-    // ── Build sidebar list ────────────────────────────────────
+    // ── Sidebar list ──────────────────────────────────────────
     const noteList = document.getElementById('note-list');
     notes.forEach((note, idx) => {
       const entry = document.createElement('div');
@@ -306,40 +367,22 @@
       `;
       entry.addEventListener('click', () => {
         renderNote(idx);
-        // Close sidebar on mobile after selecting
         if (window.innerWidth < 768) closeSidebar();
       });
       noteList.appendChild(entry);
     });
-
-    // Render first note by default
     renderNote(0);
 
     // ── Sidebar toggle ────────────────────────────────────────
-    const menuBtn  = document.getElementById('menu-btn');
-    const sidebar  = document.getElementById('sidebar');
-    const overlay  = document.getElementById('sidebar-overlay');
+    const menuBtn = document.getElementById('menu-btn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
 
-    function openSidebar()  {
-      sidebar.classList.add('open');
-      overlay.classList.add('visible');
-      menuBtn.classList.add('open');
-    }
-    function closeSidebar() {
-      sidebar.classList.remove('open');
-      overlay.classList.remove('visible');
-      menuBtn.classList.remove('open');
-    }
+    function openSidebar()  { sidebar.classList.add('open'); overlay.classList.add('visible'); menuBtn.classList.add('open'); }
+    function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('visible'); menuBtn.classList.remove('open'); }
 
-    menuBtn.addEventListener('click', () => {
-      sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
-    });
+    menuBtn.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
     overlay.addEventListener('click', closeSidebar);
-
-    // Show hamburger when note screen appears
-    function revealMenuBtn() {
-      menuBtn.classList.add('visible');
-    }
 
     // ── Countdown ─────────────────────────────────────────────
     const display    = document.getElementById('countdown-display');
@@ -358,183 +401,181 @@
     }
 
     let remaining = getSecondsUntilNoon();
-
     function pad(n) { return String(n).padStart(2, '0'); }
     function formatTime(s) {
       return `${pad(Math.floor(s / 3600))}:${pad(Math.floor((s % 3600) / 60))}:${pad(s % 60)}`;
     }
 
     function showNote() {
-      animating = false;
       cdScreen.classList.add('hidden');
       setTimeout(() => {
         noteScreen.classList.add('visible');
-        revealMenuBtn();
+        menuBtn.classList.add('visible');
       }, 50);
     }
 
     function tick() {
       display.textContent = 'Hi Fiz :)';
-      if (remaining === 0) {
-        clearInterval(timer);
-        setTimeout(showNote, 600);
-        return;
-      }
+      if (remaining === 0) { clearInterval(timer); setTimeout(showNote, 600); return; }
       remaining--;
     }
-
     tick();
     const timer = setInterval(tick, 1000);
 
-    // ── Flowers ───────────────────────────────────────────────
-    const FLOWER_SIZE = 72;
-    const MATCH_DIST  = 140;
+    // ── Wordle ────────────────────────────────────────────────
+    const TARGET   = 'PINKY';
+    const MAX_ROWS = 6;
+    const COLS     = 5;
 
-    const flowerData = [
-      { src: 'Orange_flower Medium.png',   color: 'orange' },
-      { src: 'Orange_Flower_2 Medium.png', color: 'orange' },
-      { src: 'Pink_Flower Medium.png',     color: 'pink'   },
-      { src: 'Pink_Flower_2 Medium.png',   color: 'pink'   },
-      { src: 'Purple_Flower Medium.png',   color: 'purple' },
-      { src: 'Purple_Flower_2 Medium.png', color: 'purple' },
-      { src: 'Yellow_Flower Medium.png',   color: 'yellow' },
-      { src: 'Yellow_Flower_2 Medium.png', color: 'yellow' },
-    ];
+    let currentRow  = 0;
+    let currentCol  = 0;
+    let currentGuess = [];
+    let gameOver    = false;
 
-    const speeds = [0.28, -0.22, 0.18, -0.30, 0.25, -0.18, -0.24, 0.20];
+    const grid    = document.getElementById('wordle-grid');
+    const msgEl   = document.getElementById('wordle-msg');
+    const cells   = [];   // cells[row][col]
+    const keyEls  = {};   // letter → button element
 
-    const flowerEls = [];
-    const fState = flowerData.map((f, i) => {
-      const img = document.createElement('img');
-      img.src = f.src.replace(/ /g, '%20');
-      img.className = 'flower';
-      img.draggable = false;
-      cdScreen.appendChild(img);
-      flowerEls.push(img);
+    // Build grid
+    for (let r = 0; r < MAX_ROWS; r++) {
+      const row = document.createElement('div');
+      row.className = 'wordle-row';
+      cells[r] = [];
+      for (let c = 0; c < COLS; c++) {
+        const cell = document.createElement('div');
+        cell.className = 'wordle-cell';
+        row.appendChild(cell);
+        cells[r][c] = cell;
+      }
+      grid.appendChild(row);
+    }
 
-      const margin = FLOWER_SIZE + 30;
-      const W = window.innerWidth, H = window.innerHeight;
-      let x, y;
-      do {
-        x = margin + Math.random() * (W - 2 * margin);
-        y = margin + Math.random() * (H - 2 * margin);
-      } while (Math.abs(x - W/2) < 160 && Math.abs(y - H/2) < 100);
-
-      return {
-        color: f.color, x, y,
-        vx: speeds[i],
-        vy: speeds[(i + 3) % speeds.length],
-        dragging: false, matched: false, snapped: false,
-      };
-    });
-
-    // ── Drag ─────────────────────────────────────────────────
-    let drag = null;
-
-    flowerEls.forEach((el, idx) => {
-      el.addEventListener('mousedown', e => {
-        if (fState[idx].snapped) return;
-        e.preventDefault();
-        drag = { idx, ox: e.clientX - fState[idx].x, oy: e.clientY - fState[idx].y, moved: false };
-        fState[idx].dragging = true;
-        el.style.zIndex = 50;
-        el.style.cursor = 'grabbing';
+    // Build keyboard
+    const kb = document.getElementById('wordle-keyboard');
+    const rows = ['QWERTYUIOP', 'ASDFGHJKL', '⌫ZXCVBNM↵'];
+    rows.forEach(rowStr => {
+      const rowEl = document.createElement('div');
+      rowEl.className = 'kb-row';
+      [...rowStr].forEach(ch => {
+        const btn = document.createElement('button');
+        btn.className = 'kb-key' + (ch === '⌫' || ch === '↵' ? ' wide' : '');
+        btn.textContent = ch === '↵' ? 'Enter' : ch;
+        btn.addEventListener('click', () => handleKey(ch === '↵' ? 'Enter' : ch));
+        rowEl.appendChild(btn);
+        if (ch !== '⌫' && ch !== '↵') keyEls[ch] = btn;
       });
-      el.addEventListener('touchstart', e => {
-        if (fState[idx].snapped) return;
-        e.preventDefault();
-        const t = e.touches[0];
-        drag = { idx, ox: t.clientX - fState[idx].x, oy: t.clientY - fState[idx].y, moved: false };
-        fState[idx].dragging = true;
-        el.style.zIndex = 50;
-      }, { passive: false });
+      kb.appendChild(rowEl);
     });
 
-    window.addEventListener('mousemove', e => {
-      if (!drag) return;
-      fState[drag.idx].x = e.clientX - drag.ox;
-      fState[drag.idx].y = e.clientY - drag.oy;
-      drag.moved = true;
-    });
-    window.addEventListener('touchmove', e => {
-      if (!drag) return;
-      e.preventDefault();
-      const t = e.touches[0];
-      fState[drag.idx].x = t.clientX - drag.ox;
-      fState[drag.idx].y = t.clientY - drag.oy;
-      drag.moved = true;
-    }, { passive: false });
-
-    function endDrag() {
-      if (!drag) return;
-      const wasMoved = drag.moved;
-      fState[drag.idx].dragging = false;
-      flowerEls[drag.idx].style.zIndex = '';
-      flowerEls[drag.idx].style.cursor = 'grab';
-      drag = null;
-      if (wasMoved) checkMatches();
-    }
-    window.addEventListener('mouseup', endDrag);
-    window.addEventListener('touchend', endDrag);
-
-    // ── Match detection ───────────────────────────────────────
-    const colors = [...new Set(flowerData.map(f => f.color))];
-
-    function snapTo(f, i, tx, ty) {
-      flowerEls[i].style.transition = 'left 0.35s ease, top 0.35s ease, filter 0.4s ease';
-      f.x = tx; f.y = ty;
-      flowerEls[i].style.left = tx + 'px';
-      flowerEls[i].style.top  = ty + 'px';
-      setTimeout(() => { flowerEls[i].style.transition = 'filter 0.4s ease'; }, 380);
+    function setMsg(txt, dur = 1800) {
+      msgEl.textContent = txt;
+      if (dur) setTimeout(() => { if (msgEl.textContent === txt) msgEl.textContent = ''; }, dur);
     }
 
-    function checkMatches() {
-      colors.forEach(color => {
-        const pair = fState.filter(f => f.color === color);
-        if (pair[0].snapped) return;
-        const isNear = Math.hypot(pair[0].x - pair[1].x, pair[0].y - pair[1].y) < MATCH_DIST;
-        if (isNear) {
-          const mx = (pair[0].x + pair[1].x) / 2;
-          const my = (pair[0].y + pair[1].y) / 2;
-          const off = FLOWER_SIZE * 0.3;
-          const i0 = fState.indexOf(pair[0]), i1 = fState.indexOf(pair[1]);
-          snapTo(pair[0], i0, mx - off, my - off);
-          snapTo(pair[1], i1, mx + off, my + off);
-          pair[0].snapped = pair[1].snapped = true;
-          pair[0].matched = pair[1].matched = true;
-          flowerEls[i0].classList.add('matched');
-          flowerEls[i1].classList.add('matched');
-          flowerEls[i0].style.cursor = 'default';
-          flowerEls[i1].style.cursor = 'default';
+    function handleKey(key) {
+      if (gameOver) return;
+      if (key === 'Backspace' || key === '⌫') {
+        if (currentCol > 0) {
+          currentCol--;
+          currentGuess.pop();
+          cells[currentRow][currentCol].textContent = '';
+          cells[currentRow][currentCol].classList.remove('filled');
         }
-      });
-
-      const allSnapped = colors.every(color =>
-        fState.filter(f => f.color === color).every(f => f.snapped)
-      );
-      if (allSnapped) setTimeout(() => { clearInterval(timer); showNote(); }, 700);
+        return;
+      }
+      if (key === 'Enter') {
+        submitGuess();
+        return;
+      }
+      if (/^[A-Za-z]$/.test(key) && currentCol < COLS) {
+        const letter = key.toUpperCase();
+        currentGuess.push(letter);
+        const cell = cells[currentRow][currentCol];
+        cell.textContent = letter;
+        cell.classList.add('filled');
+        cell.classList.add('pop');
+        cell.addEventListener('animationend', () => cell.classList.remove('pop'), { once: true });
+        currentCol++;
+      }
     }
 
-    // ── Float animation ───────────────────────────────────────
-    let animating = true;
-    function animate() {
-      if (!animating) return;
-      const W = window.innerWidth, H = window.innerHeight;
-      fState.forEach((f, i) => {
-        if (f.snapped) return;
-        if (!f.dragging) {
-          f.x += f.vx; f.y += f.vy;
-          if (f.x <= 0)               { f.x = 0;               f.vx =  Math.abs(f.vx); }
-          if (f.x >= W - FLOWER_SIZE) { f.x = W - FLOWER_SIZE; f.vx = -Math.abs(f.vx); }
-          if (f.y <= 0)               { f.y = 0;               f.vy =  Math.abs(f.vy); }
-          if (f.y >= H - FLOWER_SIZE) { f.y = H - FLOWER_SIZE; f.vy = -Math.abs(f.vy); }
+    function submitGuess() {
+      if (currentCol < COLS) { setMsg('Not enough letters'); return; }
+
+      const guess = currentGuess.join('');
+      const result = scoreGuess(guess);
+
+      // Flip & colour tiles with stagger
+      result.forEach((state, c) => {
+        const cell = cells[currentRow][c];
+        setTimeout(() => {
+          cell.classList.add('flip');
+          cell.addEventListener('animationend', () => {
+            cell.classList.remove('flip');
+            cell.classList.add(state);
+          }, { once: true });
+          // Update keyboard key (only upgrade: correct > present > absent)
+          const key = guess[c];
+          const keyEl = keyEls[key];
+          if (keyEl) {
+            const cur = keyEl.classList;
+            if (!cur.contains('correct')) {
+              if (state === 'correct') { cur.remove('present','absent'); cur.add('correct'); }
+              else if (state === 'present' && !cur.contains('correct')) { cur.remove('absent'); cur.add('present'); }
+              else if (state === 'absent' && !cur.contains('correct') && !cur.contains('present')) { cur.add('absent'); }
+            }
+          }
+        }, c * 80);
+      });
+
+      const won = result.every(s => s === 'correct');
+      const totalDelay = COLS * 80 + 400;
+
+      setTimeout(() => {
+        if (won) {
+          setMsg('', 0);
+          setTimeout(showNote, 500);
+          gameOver = true;
+        } else {
+          currentRow++;
+          currentCol = 0;
+          currentGuess = [];
+          if (currentRow >= MAX_ROWS) {
+            setMsg(`The word was ${TARGET} 🌸`, 0);
+            gameOver = true;
+          }
         }
-        flowerEls[i].style.left = f.x + 'px';
-        flowerEls[i].style.top  = f.y + 'px';
-      });
-      requestAnimationFrame(animate);
+      }, totalDelay);
     }
-    animate();
+
+    function scoreGuess(guess) {
+      const result  = Array(COLS).fill('absent');
+      const tLeft   = TARGET.split('');
+      const gLeft   = guess.split('');
+
+      // First pass: correct
+      for (let i = 0; i < COLS; i++) {
+        if (gLeft[i] === tLeft[i]) {
+          result[i] = 'correct';
+          tLeft[i] = null;
+          gLeft[i] = null;
+        }
+      }
+      // Second pass: present
+      for (let i = 0; i < COLS; i++) {
+        if (gLeft[i] === null) continue;
+        const j = tLeft.indexOf(gLeft[i]);
+        if (j !== -1) { result[i] = 'present'; tLeft[j] = null; }
+      }
+      return result;
+    }
+
+    // Physical keyboard
+    window.addEventListener('keydown', e => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      handleKey(e.key === 'Backspace' ? '⌫' : e.key);
+    });
   </script>
 
 </body>
