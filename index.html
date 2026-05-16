@@ -327,6 +327,10 @@
     // ── Notes data ────────────────────────────────────────────
     const notes = [
       {
+        date: 'May 16, 2026',
+        content: `Dear Fiz,\n\nAll I want is slow morning with you, cozy evenings ,and everything in between. I can't help but envision every aspect of life with you, every single day. You mean so much to me. I can't wait to wine and dine you with a home cooked meal and a bottle of wine we both pick you :)\n\n- yours`
+      },
+      {
         date: 'May 15, 2026',
         content: `Dear Fiz,\n\nI remember when I went to Guadalupe, and Gabe was driving. I just stared out the window and watched the trees passing by. At the time we were just friends, but god I wanted you so bad. I just thought of you, and us, and how perfect you were for me, and how I would try to be as perfect as I could be for you. Whether I'm doing the most fun thing on the planet, or the loneliest thing ever, the only thing on my mind is always you. You're just like the passing trees, grounded, yet always there :)\n\nYours ❤`
       },
@@ -423,7 +427,7 @@
     const timer = setInterval(tick, 1000);
 
     // ── Wordle ────────────────────────────────────────────────
-    const TARGET   = 'PINKY';
+    const TARGET   = 'TEDDY';
     const MAX_ROWS = 6;
     const COLS     = 5;
 
@@ -542,7 +546,7 @@
           currentCol = 0;
           currentGuess = [];
           if (currentRow >= MAX_ROWS) {
-            setMsg(`The word was ${TARGET} 🌸`, 0);
+            setMsg(`The word was ${TARGET} 🧸`, 0);
             gameOver = true;
           }
         }
