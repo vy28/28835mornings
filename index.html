@@ -327,6 +327,10 @@
     // ── Notes data ────────────────────────────────────────────
     const notes = [
       {
+        date: 'May 18, 2026',
+        content: `Dear Fiz,\n\nThere's moments in my day where I'm literally consumed by the thought of you. I litterally can focus on anything but you. I just keep thinking about seeing you, being with you, and then I immediately go find cat lady in my texts. And I love it, it's like I can literally see myself smiling as soon as the thought of you hits my brain. If I was a drug addict, you'd be my cocaine HAHA\n\n- yours`
+      },
+      {
         date: 'May 16, 2026',
         content: `Dear Fiz,\n\nI was scrolling through Instagram earlier today and I came across this reel that was this one guy travelling through Europe. I swear I felt like transported into the reel for a second and you were there, standing across a bridge in Venice, in a beautiful white dress, telling me to cross over since we had so much to explore. I want to explore so much of the world with you. Experience so many new things together, and be able to make all of those memories with you. My favorite travel partner :)\n\n- yours`
       },
@@ -427,7 +431,7 @@
     const timer = setInterval(tick, 1000);
 
     // ── Wordle ────────────────────────────────────────────────
-    const TARGET   = 'PLANE';
+    const TARGET   = 'CANDY';
     const MAX_ROWS = 6;
     const COLS     = 5;
 
@@ -546,7 +550,7 @@
           currentCol = 0;
           currentGuess = [];
           if (currentRow >= MAX_ROWS) {
-            setMsg(`The word was ${TARGET} ✈️`, 0);
+            setMsg(`The word was ${TARGET} 🍬`, 0);
             gameOver = true;
           }
         }
