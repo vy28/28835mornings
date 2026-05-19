@@ -327,6 +327,10 @@
     // ── Notes data ────────────────────────────────────────────
     const notes = [
       {
+        date: 'May 19, 2026',
+        content: `Dear Fiz,\n\nNot a long one today, but I was just thinking how crazy it is, that my best friend, someone I've known for years and have been with through all sorts of ups and downs, is the girl that's perfect for me. And I get to experience everything in life with you now :) how lucky am I\n\n- yours`
+      },
+      {
         date: 'May 18, 2026',
         content: `Dear Fiz,\n\nThere's moments in my day where I'm literally consumed by the thought of you. I litterally can focus on anything but you. I just keep thinking about seeing you, being with you, and then I immediately go find cat lady in my texts. And I love it, it's like I can literally see myself smiling as soon as the thought of you hits my brain. If I was a drug addict, you'd be my cocaine HAHA\n\n- yours`
       },
@@ -431,7 +435,7 @@
     const timer = setInterval(tick, 1000);
 
     // ── Wordle ────────────────────────────────────────────────
-    const TARGET   = 'CANDY';
+    const TARGET   = 'CLOUD';
     const MAX_ROWS = 6;
     const COLS     = 5;
 
@@ -550,7 +554,7 @@
           currentCol = 0;
           currentGuess = [];
           if (currentRow >= MAX_ROWS) {
-            setMsg(`The word was ${TARGET} 🍬`, 0);
+            setMsg(`The word was ${TARGET} ☁️`, 0);
             gameOver = true;
           }
         }
