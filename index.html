@@ -168,6 +168,11 @@
 
     /* ── Skip button ── */
     #skip-btn {
+      position: fixed;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
       background: none;
       border: none;
       font-family: 'Instrument Serif', Georgia, serif;
@@ -175,8 +180,8 @@
       color: #bbb;
       cursor: pointer;
       letter-spacing: 0.06em;
-      padding: 4px 8px;
-      flex-shrink: 0;
+      padding: 8px 16px;
+      -webkit-tap-highlight-color: transparent;
     }
     #skip-btn:hover { color: #888; }
 
@@ -315,8 +320,9 @@
     </div>
 
     <div id="wordle-keyboard"></div>
-    <button id="skip-btn" onclick="showNote()">skip wordle</button>
   </div>
+
+  <button id="skip-btn" onclick="showNote()">skip wordle</button>
 
   <!-- Note screen -->
   <div class="screen" id="note-screen">
@@ -449,8 +455,11 @@
       return `${pad(Math.floor(s / 3600))}:${pad(Math.floor((s % 3600) / 60))}:${pad(s % 60)}`;
     }
 
+    const skipBtn = document.getElementById('skip-btn');
+
     function showNote() {
       cdScreen.classList.add('hidden');
+      skipBtn.style.display = 'none';
       setTimeout(() => {
         noteScreen.classList.add('visible');
         menuBtn.classList.add('visible');
