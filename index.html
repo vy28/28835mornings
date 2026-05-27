@@ -166,6 +166,20 @@
     .kb-key.present { background: #C9A96E; color: #fff; }
     .kb-key.absent  { background: #B0AAA4; color: #fff; }
 
+    /* ── Skip button ── */
+    #skip-btn {
+      background: none;
+      border: none;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 0.75rem;
+      color: #bbb;
+      cursor: pointer;
+      letter-spacing: 0.06em;
+      padding: 4px 8px;
+      flex-shrink: 0;
+    }
+    #skip-btn:hover { color: #888; }
+
     /* ── Note card ── */
     .note-card {
       border: 1px solid #D8D8D8;
@@ -301,6 +315,7 @@
     </div>
 
     <div id="wordle-keyboard"></div>
+    <button id="skip-btn" onclick="showNote()">skip wordle</button>
   </div>
 
   <!-- Note screen -->
@@ -326,6 +341,10 @@
   <script>
     // ── Notes data ────────────────────────────────────────────
     const notes = [
+      {
+        date: 'May 27, 2026',
+        content: `Dear Fiz,\n\nI think the best part about falling asleep at your place is waking up and knowing that you're right there. I can't describe to you the amount of comfort and joy seeing your face right after waking up brings me... it's like getting a warm glass of milk right before you sleep at night. It's like having a pillow that's cold on both sides. It's just perfect. All I want is to wake up next to you and see you every day that I possibly can for the rest of my life. You are literally the best view I could ever ask for.\n\n- yours`
+      },
       {
         date: 'May 25, 2026',
         content: `Dear Fiz,\n\nSometimes after you fall asleep, I just watch you for a second. You look so beautiful, so at peace, like nothing in the world could bother you. I think I realize now that you look at peace not only because you are at peace, but also because that's what you are to me — something I can always look forward to, someone I can always keep as a cornerstone. I swear, as soon as I'm within 5 feet of you, the world slows down a little. Everything seems more attainable, you make everything in life seem so much easier just by being around. More peaceful.\n\n- Yours ❤`
