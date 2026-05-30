@@ -483,7 +483,7 @@
     const timer = setInterval(tick, 1000);
 
     // ── Wordle ────────────────────────────────────────────────
-    const TARGET   = 'SLEEP';
+    const TARGET   = 'LIGHT';
     const MAX_ROWS = 6;
     const COLS     = 5;
 
@@ -602,7 +602,7 @@
           currentCol = 0;
           currentGuess = [];
           if (currentRow >= MAX_ROWS) {
-            setMsg(`The word was ${TARGET} 😴`, 0);
+            setMsg(`The word was ${TARGET} 🌟`, 0);
             gameOver = true;
           }
         }
