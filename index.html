@@ -348,6 +348,10 @@
     // ── Notes data ────────────────────────────────────────────
     const notes = [
       {
+        date: 'June 6, 2026',
+        content: `Dear Fiz,\n\nI think what I heart most about you is how versatile you are. Hike? Down. Car ride? Down. Weird food I've never tried? Down. I want to try so many new things with you, travel to so many new places. And it's literally so easy with you cause you're so willing to do the dumb little nerdy things I like. I couldn't ask for someone better :)\n\n- yours`
+      },
+      {
         date: 'June 5, 2026',
         content: `Dear Fiz,\n\nI know the website is called 28835 mornings, but I can't wait to spend 28835 sunsets with you. I wanna watch every sunset in every sky, in every place in the world with you. Watch the same sky at the same time. The sky reminds me of you so much. The colors, the calmness, everything about it.\n\n- yours`
       },
@@ -491,7 +495,7 @@
     const timer = setInterval(tick, 1000);
 
     // ── Wordle ────────────────────────────────────────────────
-    const TARGET   = 'SKIES';
+    const TARGET   = 'WEIRD';
     const MAX_ROWS = 6;
     const COLS     = 5;
 
@@ -610,7 +614,7 @@
           currentCol = 0;
           currentGuess = [];
           if (currentRow >= MAX_ROWS) {
-            setMsg(`The word was ${TARGET} 🌅`, 0);
+            setMsg(`The word was ${TARGET} 🤪`, 0);
             gameOver = true;
           }
         }
