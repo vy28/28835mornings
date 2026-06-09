@@ -348,6 +348,10 @@
     // ── Notes data ────────────────────────────────────────────
     const notes = [
       {
+        date: 'June 9, 2026',
+        content: `Dear Fiz,\n\nAs much as I hate not doing new things with you or experiencing things with you. The one thing it always does is it gives me so much perspective on how much I want you in my life. For every moment new or old. Whether we're going skydiving together for the first time or just cooking a meal together for the 100th time. I want you for every moment in life. :)\n\n- yours`
+      },
+      {
         date: 'June 8, 2026',
         content: `Dear Fiz,\n\nThe mountains were beautiful and they made me not wanna go back at all, yet somehow they reminded me of you everytime I looked at them. Of you hanging out the car window with the wind in your hair the same time last year and how you would've loved the mountains just as much as I did. I can't wait to go back to Colorado with you, and watch you feel free as a bird with the wind in your hair :)\n\n- yours`
       },
@@ -499,7 +503,7 @@
     const timer = setInterval(tick, 1000);
 
     // ── Wordle ────────────────────────────────────────────────
-    const TARGET   = 'WINDY';
+    const TARGET   = 'MEALS';
     const MAX_ROWS = 6;
     const COLS     = 5;
 
@@ -618,7 +622,7 @@
           currentCol = 0;
           currentGuess = [];
           if (currentRow >= MAX_ROWS) {
-            setMsg(`The word was ${TARGET} 🍃`, 0);
+            setMsg(`The word was ${TARGET} 🍽️`, 0);
             gameOver = true;
           }
         }
