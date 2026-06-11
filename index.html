@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600&family=Instrument+Serif&family=Nothing+You+Could+Do&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -305,6 +306,220 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
+    /* ── Matcha map button ── */
+    #matcha-btn {
+      position: fixed;
+      top: 16px;
+      right: 60px;
+      z-index: 100;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 22px;
+      line-height: 1;
+      padding: 6px;
+      opacity: 0;
+      transition: opacity 0.4s ease, transform 0.15s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #matcha-btn.visible { opacity: 1; }
+    #matcha-btn:active { transform: scale(0.9); }
+
+    /* ── Matcha map screen ── */
+    #matcha-screen {
+      z-index: 200;
+      padding: 0;
+      gap: 0;
+      align-items: stretch;
+      justify-content: flex-start;
+    }
+
+    .matcha-header {
+      width: 100%;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #E8E4E0;
+      flex-shrink: 0;
+    }
+
+    .matcha-header h2 {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 1.2rem;
+      font-weight: 400;
+      color: #000;
+      letter-spacing: 0.02em;
+    }
+
+    .matcha-close {
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+      color: #888;
+      line-height: 1;
+      padding: 4px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    #matcha-map {
+      flex: 1;
+      width: 100%;
+    }
+
+    #matcha-add-btn {
+      position: absolute;
+      bottom: 24px;
+      right: 24px;
+      z-index: 500;
+      background: #A8C5A0;
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      width: 52px;
+      height: 52px;
+      font-size: 1.6rem;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ── Add place form ── */
+    #matcha-form-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.2);
+      z-index: 600;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    #matcha-form-overlay.visible { display: flex; }
+
+    .matcha-form {
+      background: #FAF8F6;
+      border-radius: 14px;
+      padding: 24px;
+      width: min(380px, 100%);
+      max-height: 85vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .matcha-form h3 {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 1.3rem;
+      font-weight: 400;
+      color: #000;
+    }
+
+    .matcha-form input[type="text"], .matcha-form textarea {
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 0.9rem;
+      padding: 10px 12px;
+      border: 1.5px solid #D8D4CF;
+      border-radius: 8px;
+      background: #fff;
+      color: #000;
+      resize: none;
+    }
+    .matcha-form input[type="text"]:focus, .matcha-form textarea:focus {
+      outline: none;
+      border-color: #A8C5A0;
+    }
+
+    .matcha-search-results {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-height: 160px;
+      overflow-y: auto;
+    }
+    .matcha-search-result {
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 0.82rem;
+      padding: 8px 10px;
+      border: 1.5px solid #E8E4E0;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #333;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .matcha-search-result:hover, .matcha-search-result.selected {
+      background: #EDE9E4;
+      border-color: #A8C5A0;
+    }
+
+    .matcha-selected-name {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 1.05rem;
+      color: #000;
+    }
+
+    .matcha-stars {
+      display: flex;
+      gap: 6px;
+      font-size: 1.7rem;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .matcha-star { color: #D8D4CF; transition: color 0.15s ease; }
+    .matcha-star.filled { color: #C9A96E; }
+
+    .matcha-form-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .matcha-btn-primary, .matcha-btn-secondary {
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 0.85rem;
+      padding: 10px 18px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .matcha-btn-primary { background: #A8C5A0; color: #fff; }
+    .matcha-btn-primary:disabled { background: #D8D4CF; cursor: default; }
+    .matcha-btn-secondary { background: #E2DDD8; color: #333; }
+
+    /* ── Leaflet popup styling ── */
+    .matcha-popup-name {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 1.05rem;
+      color: #000;
+      margin-bottom: 4px;
+    }
+    .matcha-popup-stars {
+      color: #C9A96E;
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+    }
+    .matcha-popup-notes {
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 0.8rem;
+      color: #666;
+    }
+    .matcha-marker-icon {
+      background: #FAF8F6;
+      border: 1.5px solid #A8C5A0;
+      border-radius: 50%;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+    }
   </style>
 </head>
 <body>
@@ -336,6 +551,9 @@
     <span></span><span></span><span></span>
   </button>
 
+  <!-- Matcha map button -->
+  <button id="matcha-btn" aria-label="Our matcha spots" title="Our matcha spots">🍵</button>
+
   <!-- Sidebar -->
   <div id="sidebar">
     <div class="sidebar-header"><h2>Notes</h2></div>
@@ -343,6 +561,43 @@
   </div>
 
   <div id="sidebar-overlay"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+  <!-- Matcha map screen -->
+  <div class="screen hidden" id="matcha-screen">
+    <div class="matcha-header">
+      <h2>Our Matcha Spots</h2>
+      <button class="matcha-close" id="matcha-close-btn" aria-label="Close map">✕</button>
+    </div>
+    <div id="matcha-map"></div>
+    <button id="matcha-add-btn" aria-label="Add a place">+</button>
+  </div>
+
+  <!-- Add matcha place form -->
+  <div id="matcha-form-overlay">
+    <div class="matcha-form">
+      <h3>Add a matcha spot</h3>
+      <input type="text" id="matcha-search-input" placeholder="Search for a cafe or address...">
+      <div class="matcha-search-results" id="matcha-search-results"></div>
+      <div id="matcha-selected-place" style="display:none; flex-direction: column; gap: 14px;">
+        <div class="matcha-selected-name" id="matcha-selected-name"></div>
+        <div class="matcha-stars" id="matcha-stars">
+          <span class="matcha-star" data-val="1">★</span>
+          <span class="matcha-star" data-val="2">★</span>
+          <span class="matcha-star" data-val="3">★</span>
+          <span class="matcha-star" data-val="4">★</span>
+          <span class="matcha-star" data-val="5">★</span>
+        </div>
+        <textarea id="matcha-notes" rows="2" placeholder="Notes (optional)"></textarea>
+      </div>
+      <div class="matcha-form-actions">
+        <button class="matcha-btn-secondary" id="matcha-cancel-btn">Cancel</button>
+        <button class="matcha-btn-primary" id="matcha-save-btn" disabled>Add</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     // ── Notes data ────────────────────────────────────────────
@@ -484,6 +739,7 @@
     }
 
     const skipBtn = document.getElementById('skip-btn');
+    const matchaBtn = document.getElementById('matcha-btn');
 
     function showNote() {
       cdScreen.classList.add('hidden');
@@ -491,6 +747,7 @@
       setTimeout(() => {
         noteScreen.classList.add('visible');
         menuBtn.classList.add('visible');
+        matchaBtn.classList.add('visible');
       }, 50);
     }
 
@@ -655,6 +912,182 @@
     window.addEventListener('keydown', e => {
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       handleKey(e.key === 'Backspace' ? '⌫' : e.key);
+    });
+
+    // ── Matcha Map ────────────────────────────────────────────
+    const sb = supabase.createClient(
+      'https://bobvkcevvvucizyegbii.supabase.co',
+      'sb_publishable_eZ0-AXE-TF823xl6efQsBQ_Gb11ugeH'
+    );
+
+    const matchaScreen        = document.getElementById('matcha-screen');
+    const matchaCloseBtn      = document.getElementById('matcha-close-btn');
+    const matchaAddBtn        = document.getElementById('matcha-add-btn');
+    const matchaFormOverlay   = document.getElementById('matcha-form-overlay');
+    const matchaCancelBtn     = document.getElementById('matcha-cancel-btn');
+    const matchaSaveBtn       = document.getElementById('matcha-save-btn');
+    const matchaSearchInput   = document.getElementById('matcha-search-input');
+    const matchaSearchResults = document.getElementById('matcha-search-results');
+    const matchaSelectedPlace = document.getElementById('matcha-selected-place');
+    const matchaSelectedName  = document.getElementById('matcha-selected-name');
+    const matchaNotes         = document.getElementById('matcha-notes');
+    const matchaStars         = document.querySelectorAll('.matcha-star');
+
+    let matchaMap      = null;
+    let selectedResult = null;
+    let selectedRating = 0;
+
+    function starString(rating) {
+      return '★'.repeat(rating) + '☆'.repeat(5 - rating);
+    }
+
+    function matchaIcon() {
+      return L.divIcon({
+        html: '<div class="matcha-marker-icon">🍵</div>',
+        className: '',
+        iconSize: [34, 34],
+        iconAnchor: [17, 17],
+        popupAnchor: [0, -17],
+      });
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function addPlaceMarker(place) {
+      const marker = L.marker([place.lat, place.lng], { icon: matchaIcon() }).addTo(matchaMap);
+      marker.bindPopup(`
+        <div class="matcha-popup-name">${escapeHtml(place.name)}</div>
+        <div class="matcha-popup-stars">${starString(place.rating)}</div>
+        ${place.notes ? `<div class="matcha-popup-notes">${escapeHtml(place.notes)}</div>` : ''}
+      `);
+    }
+
+    async function loadPlaces() {
+      const { data, error } = await sb.from('matcha_places').select('*');
+      if (error) { console.error(error); return; }
+      data.forEach(addPlaceMarker);
+    }
+
+    function initMatchaMap() {
+      if (matchaMap) return;
+      matchaMap = L.map('matcha-map').setView([30.2672, -97.7431], 11); // Austin, TX
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors',
+        maxZoom: 19,
+      }).addTo(matchaMap);
+      loadPlaces();
+    }
+
+    matchaBtn.addEventListener('click', () => {
+      matchaScreen.classList.remove('hidden');
+      initMatchaMap();
+      setTimeout(() => matchaMap.invalidateSize(), 100);
+    });
+
+    matchaCloseBtn.addEventListener('click', () => {
+      matchaScreen.classList.add('hidden');
+    });
+
+    function resetMatchaForm() {
+      matchaSearchInput.value = '';
+      matchaSearchResults.innerHTML = '';
+      matchaSelectedPlace.style.display = 'none';
+      matchaNotes.value = '';
+      selectedResult = null;
+      selectedRating = 0;
+      updateStars();
+      matchaSaveBtn.disabled = true;
+    }
+
+    matchaAddBtn.addEventListener('click', () => {
+      matchaFormOverlay.classList.add('visible');
+    });
+
+    matchaCancelBtn.addEventListener('click', () => {
+      matchaFormOverlay.classList.remove('visible');
+      resetMatchaForm();
+    });
+
+    let matchaSearchTimeout;
+    matchaSearchInput.addEventListener('input', () => {
+      clearTimeout(matchaSearchTimeout);
+      const query = matchaSearchInput.value.trim();
+      if (!query) { matchaSearchResults.innerHTML = ''; return; }
+      matchaSearchTimeout = setTimeout(() => searchMatchaPlaces(query), 500);
+    });
+
+    async function searchMatchaPlaces(query) {
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(query)}`);
+        const results = await res.json();
+        matchaSearchResults.innerHTML = '';
+        results.forEach(r => {
+          const el = document.createElement('div');
+          el.className = 'matcha-search-result';
+          el.textContent = r.display_name;
+          el.addEventListener('click', () => selectMatchaResult(r, el));
+          matchaSearchResults.appendChild(el);
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function selectMatchaResult(result, el) {
+      document.querySelectorAll('.matcha-search-result').forEach(e => e.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedResult = result;
+      matchaSelectedName.textContent = result.display_name.split(',')[0];
+      matchaSelectedPlace.style.display = 'flex';
+      updateMatchaSaveState();
+    }
+
+    function updateStars() {
+      matchaStars.forEach(star => {
+        star.classList.toggle('filled', Number(star.dataset.val) <= selectedRating);
+      });
+    }
+
+    matchaStars.forEach(star => {
+      star.addEventListener('click', () => {
+        selectedRating = Number(star.dataset.val);
+        updateStars();
+        updateMatchaSaveState();
+      });
+    });
+
+    function updateMatchaSaveState() {
+      matchaSaveBtn.disabled = !(selectedResult && selectedRating > 0);
+    }
+
+    matchaSaveBtn.addEventListener('click', async () => {
+      if (!selectedResult || !selectedRating) return;
+      const place = {
+        name: selectedResult.display_name.split(',')[0],
+        address: selectedResult.display_name,
+        lat: parseFloat(selectedResult.lat),
+        lng: parseFloat(selectedResult.lon),
+        rating: selectedRating,
+        notes: matchaNotes.value.trim() || null,
+      };
+      matchaSaveBtn.disabled = true;
+      matchaSaveBtn.textContent = 'Adding...';
+      const { data, error } = await sb.from('matcha_places').insert(place).select().single();
+      matchaSaveBtn.textContent = 'Add';
+      if (error) {
+        console.error(error);
+        alert('Could not save place. Please try again.');
+        matchaSaveBtn.disabled = false;
+        return;
+      }
+      addPlaceMarker(data);
+      matchaMap.setView([data.lat, data.lng], 14);
+      matchaFormOverlay.classList.remove('visible');
+      resetMatchaForm();
     });
   </script>
 
