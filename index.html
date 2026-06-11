@@ -477,8 +477,30 @@
       user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
-    .matcha-star { color: #D8D4CF; transition: color 0.15s ease; }
-    .matcha-star.filled { color: #C9A96E; }
+
+    .matcha-stars-display {
+      display: inline-flex;
+      gap: 2px;
+      font-size: 0.95rem;
+    }
+
+    .star-wrap {
+      position: relative;
+      display: inline-block;
+      width: 1em;
+      height: 1em;
+      line-height: 1;
+    }
+    .star-bg { position: absolute; inset: 0; color: #D8D4CF; }
+    .star-fg {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      width: 0%;
+      color: #C9A96E;
+      transition: width 0.1s ease;
+    }
+    .star-fg-inner { display: inline-block; }
 
     .matcha-form-actions {
       display: flex;
@@ -592,11 +614,11 @@
       <div id="matcha-selected-place" style="display:none; flex-direction: column; gap: 14px;">
         <div class="matcha-selected-name" id="matcha-selected-name"></div>
         <div class="matcha-stars" id="matcha-stars">
-          <span class="matcha-star" data-val="1">★</span>
-          <span class="matcha-star" data-val="2">★</span>
-          <span class="matcha-star" data-val="3">★</span>
-          <span class="matcha-star" data-val="4">★</span>
-          <span class="matcha-star" data-val="5">★</span>
+          <span class="star-wrap" data-val="1"><span class="star-bg">★</span><span class="star-fg"><span class="star-fg-inner">★</span></span></span>
+          <span class="star-wrap" data-val="2"><span class="star-bg">★</span><span class="star-fg"><span class="star-fg-inner">★</span></span></span>
+          <span class="star-wrap" data-val="3"><span class="star-bg">★</span><span class="star-fg"><span class="star-fg-inner">★</span></span></span>
+          <span class="star-wrap" data-val="4"><span class="star-bg">★</span><span class="star-fg"><span class="star-fg-inner">★</span></span></span>
+          <span class="star-wrap" data-val="5"><span class="star-bg">★</span><span class="star-fg"><span class="star-fg-inner">★</span></span></span>
         </div>
         <textarea id="matcha-notes" rows="2" placeholder="Notes (optional)"></textarea>
       </div>
@@ -939,14 +961,21 @@
     const matchaSelectedPlace = document.getElementById('matcha-selected-place');
     const matchaSelectedName  = document.getElementById('matcha-selected-name');
     const matchaNotes         = document.getElementById('matcha-notes');
-    const matchaStars         = document.querySelectorAll('.matcha-star');
+    const matchaStars         = document.querySelectorAll('#matcha-stars .star-wrap');
 
     let matchaMap      = null;
     let selectedResult = null;
     let selectedRating = 0;
 
-    function starString(rating) {
-      return '★'.repeat(rating) + '☆'.repeat(5 - rating);
+    function starsHtml(rating) {
+      let html = '<span class="matcha-stars-display">';
+      for (let i = 1; i <= 5; i++) {
+        let fillPct = 0;
+        if (rating >= i) fillPct = 100;
+        else if (rating >= i - 0.5) fillPct = 50;
+        html += `<span class="star-wrap"><span class="star-bg">★</span><span class="star-fg" style="width:${fillPct}%"><span class="star-fg-inner">★</span></span></span>`;
+      }
+      return html + '</span>';
     }
 
     function matchaIcon() {
@@ -969,7 +998,7 @@
       const marker = L.marker([place.lat, place.lng], { icon: matchaIcon() }).addTo(matchaMap);
       marker.bindPopup(`
         <div class="matcha-popup-name">${escapeHtml(place.name)}</div>
-        <div class="matcha-popup-stars">${starString(place.rating)}</div>
+        <div class="matcha-popup-stars">${starsHtml(Number(place.rating))}</div>
         ${place.notes ? `<div class="matcha-popup-notes">${escapeHtml(place.notes)}</div>` : ''}
       `);
     }
@@ -1070,13 +1099,20 @@
 
     function updateStars() {
       matchaStars.forEach(star => {
-        star.classList.toggle('filled', Number(star.dataset.val) <= selectedRating);
+        const val = Number(star.dataset.val);
+        let fillPct = 0;
+        if (selectedRating >= val) fillPct = 100;
+        else if (selectedRating >= val - 0.5) fillPct = 50;
+        star.querySelector('.star-fg').style.width = fillPct + '%';
       });
     }
 
     matchaStars.forEach(star => {
-      star.addEventListener('click', () => {
-        selectedRating = Number(star.dataset.val);
+      star.addEventListener('click', e => {
+        const rect = star.getBoundingClientRect();
+        const isHalf = (e.clientX - rect.left) < rect.width / 2;
+        const val = Number(star.dataset.val);
+        selectedRating = isHalf ? val - 0.5 : val;
         updateStars();
         updateMatchaSaveState();
       });
