@@ -441,18 +441,26 @@
       overflow-y: auto;
     }
     .matcha-search-result {
-      font-family: 'Instrument Sans', sans-serif;
-      font-size: 0.82rem;
-      padding: 8px 10px;
+      padding: 9px 12px;
       border: 1.5px solid #E8E4E0;
       border-radius: 8px;
       cursor: pointer;
-      color: #333;
       transition: background 0.15s ease, border-color 0.15s ease;
     }
     .matcha-search-result:hover, .matcha-search-result.selected {
       background: #EDE9E4;
       border-color: #A8C5A0;
+    }
+    .matcha-result-name {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 0.98rem;
+      color: #000;
+    }
+    .matcha-result-addr {
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 0.75rem;
+      color: #999;
+      margin-top: 2px;
     }
 
     .matcha-selected-name {
@@ -974,10 +982,11 @@
 
     function initMatchaMap() {
       if (matchaMap) return;
-      matchaMap = L.map('matcha-map').setView([30.2672, -97.7431], 11); // Austin, TX
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors',
-        maxZoom: 19,
+      matchaMap = L.map('matcha-map').setView([33.1507, -96.8236], 11); // Frisco, TX
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20,
       }).addTo(matchaMap);
       loadPlaces();
     }
@@ -1020,16 +1029,29 @@
       matchaSearchTimeout = setTimeout(() => searchMatchaPlaces(query), 500);
     });
 
+    function photonLabel(props) {
+      const parts = [props.street, props.city || props.town || props.village, props.state]
+        .filter(Boolean);
+      return parts.join(', ');
+    }
+
     async function searchMatchaPlaces(query) {
       try {
-        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(query)}`);
-        const results = await res.json();
+        // Bias results toward Frisco, TX
+        const res = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=5&lat=33.1507&lon=-96.8236&zoom=12`);
+        const { features } = await res.json();
         matchaSearchResults.innerHTML = '';
-        results.forEach(r => {
+        features.forEach(f => {
+          const props = f.properties;
+          const name = props.name || photonLabel(props) || 'Unnamed place';
+          const addr = photonLabel(props);
           const el = document.createElement('div');
           el.className = 'matcha-search-result';
-          el.textContent = r.display_name;
-          el.addEventListener('click', () => selectMatchaResult(r, el));
+          el.innerHTML = `
+            <div class="matcha-result-name">${escapeHtml(name)}</div>
+            ${addr ? `<div class="matcha-result-addr">${escapeHtml(addr)}</div>` : ''}
+          `;
+          el.addEventListener('click', () => selectMatchaResult(f, name, addr, el));
           matchaSearchResults.appendChild(el);
         });
       } catch (e) {
@@ -1037,11 +1059,11 @@
       }
     }
 
-    function selectMatchaResult(result, el) {
+    function selectMatchaResult(feature, name, addr, el) {
       document.querySelectorAll('.matcha-search-result').forEach(e => e.classList.remove('selected'));
       el.classList.add('selected');
-      selectedResult = result;
-      matchaSelectedName.textContent = result.display_name.split(',')[0];
+      selectedResult = { feature, name, addr };
+      matchaSelectedName.textContent = name;
       matchaSelectedPlace.style.display = 'flex';
       updateMatchaSaveState();
     }
@@ -1066,11 +1088,12 @@
 
     matchaSaveBtn.addEventListener('click', async () => {
       if (!selectedResult || !selectedRating) return;
+      const [lng, lat] = selectedResult.feature.geometry.coordinates;
       const place = {
-        name: selectedResult.display_name.split(',')[0],
-        address: selectedResult.display_name,
-        lat: parseFloat(selectedResult.lat),
-        lng: parseFloat(selectedResult.lon),
+        name: selectedResult.name,
+        address: selectedResult.addr || null,
+        lat,
+        lng,
         rating: selectedRating,
         notes: matchaNotes.value.trim() || null,
       };
