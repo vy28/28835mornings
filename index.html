@@ -633,6 +633,10 @@
     // ── Notes data ────────────────────────────────────────────
     const notes = [
       {
+        date: 'June 12, 2026',
+        content: `Dear Fiz,\n\nYou know how different weather has different moods? I hate gloomy days. I hate how down they make me feel, I hate how grey they feel. Yet somehow regardless of what day it is and what it looks like outside I have one constant, "when will I see her". Regardless of whether it's sunny and bright or dark and gloomy, my want to see you doesn't change, it's the one constant emotion I can never stop feeling. And I never want to. I'd sit thru rain with you, and I'd sit in the sun with you. As long as it's with you I'd do it all.\n\n- yours`
+      },
+      {
         date: 'June 9, 2026',
         content: `Dear Fiz,\n\nAs much as I hate not doing new things with you or experiencing things with you. The one thing it always does is it gives me so much perspective on how much I want you in my life. For every moment new or old. Whether we're going skydiving together for the first time or just cooking a meal together for the 100th time. I want you for every moment in life. :)\n\n- yours`
       },
@@ -790,7 +794,7 @@
     const timer = setInterval(tick, 1000);
 
     // ── Wordle ────────────────────────────────────────────────
-    const TARGET   = 'MEALS';
+    const TARGET   = 'SUNNY';
     const MAX_ROWS = 6;
     const COLS     = 5;
 
@@ -909,7 +913,7 @@
           currentCol = 0;
           currentGuess = [];
           if (currentRow >= MAX_ROWS) {
-            setMsg(`The word was ${TARGET} 🍽️`, 0);
+            setMsg(`The word was ${TARGET} ☀️`, 0);
             gameOver = true;
           }
         }
