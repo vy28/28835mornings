@@ -633,6 +633,10 @@
     // ── Notes data ────────────────────────────────────────────
     const notes = [
       {
+        date: 'June 14, 2026',
+        content: `Dear Fiz,\n\nOne of the things I've always appreciated the most about you is the fact that you aren't afraid to show your appreciation to anyone. You are genuinely one of the kindest most polite people I've met, so much so that I'm always in awe that you treat everyone with so much respect. That coupled with that beautiful voice of yours, I swear I forget that you are a real person and this isn't a dream. What a privilege it is to watch you grow and flourish my love. To a billion more minutes of listening to your voice :)\n\n- yours`
+      },
+      {
         date: 'June 15, 2026',
         content: `Dear Fiz,\n\nHere I am sitting at work and I can't focus on anything right now. All I can think of is being right next to you taking a nap. I miss you so so so so bad. I wish we just lived together so I could come home to the happiest sight of all, you.\n\n- yours`
       },
@@ -798,7 +802,7 @@
     const timer = setInterval(tick, 1000);
 
     // ── Wordle ────────────────────────────────────────────────
-    const TARGET   = 'SLEEP';
+    const TARGET   = 'SPEAK';
     const MAX_ROWS = 6;
     const COLS     = 5;
 
@@ -917,7 +921,7 @@
           currentCol = 0;
           currentGuess = [];
           if (currentRow >= MAX_ROWS) {
-            setMsg(`The word was ${TARGET} 😴`, 0);
+            setMsg(`The word was ${TARGET} 🗣️`, 0);
             gameOver = true;
           }
         }
