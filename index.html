@@ -633,6 +633,10 @@
     // ── Notes data ────────────────────────────────────────────
     const notes = [
       {
+        date: 'June 29, 2026',
+        content: `Dear Fiz,\n\nEvery single time I'm with you, I'm always reminded that wow, I'm right where I want to be. Every stupid joke, every moment I look at you and realize that you're thinking of food just like I am, every moment you look at me and smile and then get mad when I don't hold your hand. I wouldn't trade any bit of it for the world. You mean everything to me. As I always say, I'm right where I wanna be 😝\n\n- yours`
+      },
+      {
         date: 'June 22, 2026',
         content: `Dear Fiz,\n\nYou're as pretty as a sunflower in the middle of June. Just bright and colorful with nothing else surrounding you but your own presence. It strikes me everytime I look at your beautiful face. You smile that smile that crinkles your eyes and ruffles your nose, and you look like the sweetest thing I've ever seen. How grateful am I to be able to look at you every day :)\n\n- yours`
       },
@@ -806,7 +810,7 @@
     const timer = setInterval(tick, 1000);
 
     // ── Wordle ────────────────────────────────────────────────
-    const TARGET   = 'SUNNY';
+    const TARGET   = 'SMILE';
     const MAX_ROWS = 6;
     const COLS     = 5;
 
@@ -925,7 +929,7 @@
           currentCol = 0;
           currentGuess = [];
           if (currentRow >= MAX_ROWS) {
-            setMsg(`The word was ${TARGET} 🗣️`, 0);
+            setMsg(`The word was ${TARGET} 😊`, 0);
             gameOver = true;
           }
         }
