@@ -633,6 +633,10 @@
     // ── Notes data ────────────────────────────────────────────
     const notes = [
       {
+        date: 'August 12, 2026',
+        content: `Dear Fiz,\n\nYou know those moments where you think of nothing, and your brain just tries to run around your memories or your thoughts and grasp onto something to think about. It's just nothingness in your head for a second. Somehow, for me, whenever I have those moments, the first thing my brain grasps for is you. I just think of you, of being with you, of things you've done, of words you've said, of moments I've had with you that are nothing but perfect. And do you know what the best part is? When my brain has too much to think about and I'm overwhelmed and there's too much going on. To find stability, I think of you again. Somehow, you're my source of peace and calmness, whether I have too much going on or nothing going on at all. What more can I ask for?\n\n- yours`
+      },
+      {
         date: 'June 29, 2026',
         content: `Dear Fiz,\n\nEvery single time I'm with you, I'm always reminded that wow, I'm right where I want to be. Every stupid joke, every moment I look at you and realize that you're thinking of food just like I am, every moment you look at me and smile and then get mad when I don't hold your hand. I wouldn't trade any bit of it for the world. You mean everything to me. As I always say, I'm right where I wanna be 😝\n\n- yours`
       },
@@ -810,7 +814,7 @@
     const timer = setInterval(tick, 1000);
 
     // ── Wordle ────────────────────────────────────────────────
-    const TARGET   = 'SMILE';
+    const TARGET   = 'DREAM';
     const MAX_ROWS = 6;
     const COLS     = 5;
 
@@ -929,7 +933,7 @@
           currentCol = 0;
           currentGuess = [];
           if (currentRow >= MAX_ROWS) {
-            setMsg(`The word was ${TARGET} 😊`, 0);
+            setMsg(`The word was ${TARGET} 💭`, 0);
             gameOver = true;
           }
         }
