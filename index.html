@@ -633,6 +633,10 @@
     // ── Notes data ────────────────────────────────────────────
     const notes = [
       {
+        date: 'August 21, 2026',
+        content: `Dear Fiz,\n\nYou're literally just like a Monet painting. You remind me of the soft brushstrokes, the beautiful vibrant yet pastel colors, the delicateness with which each one of them are placed. You just look the exact same way, beautiful and delicate, but so so so impactful just on your own. If I were an artist, all I would paint is you :)\n\n- yours`
+      },
+      {
         date: 'August 17, 2026',
         content: `Dear Fiz,\n\nYou're like spotting something familiar from your hometown when you're away on a trip in a place that's unknown. You're like a piece of home that makes you feel so seen and so comfortable just by being there. That's literally the effect you have on me every time I see you. It feels so familiar yet new, so fresh yet so certain, such a perfect blend of everything good and everything in between.\n\n- yours`
       },
@@ -826,7 +830,7 @@
     const timer = setInterval(tick, 1000);
 
     // ── Wordle ────────────────────────────────────────────────
-    const TARGET   = 'HOMEY';
+    const TARGET   = 'MONET';
     const MAX_ROWS = 6;
     const COLS     = 5;
 
@@ -945,7 +949,7 @@
           currentCol = 0;
           currentGuess = [];
           if (currentRow >= MAX_ROWS) {
-            setMsg(`The word was ${TARGET} 🏡`, 0);
+            setMsg(`The word was ${TARGET} 🎨`, 0);
             gameOver = true;
           }
         }
