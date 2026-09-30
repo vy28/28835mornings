@@ -633,6 +633,10 @@
     // ── Notes data ────────────────────────────────────────────
     const notes = [
       {
+        date: 'September 30, 2026',
+        content: `Dear Fiz,\n\nI'd trade every experience I've ever had stargazing for just one moment looking into your beautiful eyes as they look up at me. Who needs the night sky when the universe itself is looking at you from 3 feet away.\n\n- yours`
+      },
+      {
         date: 'September 28, 2026',
         content: `Dear Fiz,\n\nI feel a sense of calm in your presence like I can never feel anywhere else. I could have the craziest day or the most boring and at the end of it all my constant want is always you. It just feels so right.\n\n- yours`
       },
@@ -846,7 +850,7 @@
     const timer = setInterval(tick, 1000);
 
     // ── Wordle ────────────────────────────────────────────────
-    const TARGET   = 'RIGHT';
+    const TARGET   = 'NIGHT';
     const MAX_ROWS = 6;
     const COLS     = 5;
 
@@ -965,7 +969,7 @@
           currentCol = 0;
           currentGuess = [];
           if (currentRow >= MAX_ROWS) {
-            setMsg(`The word was ${TARGET} ✅`, 0);
+            setMsg(`The word was ${TARGET} 🌌`, 0);
             gameOver = true;
           }
         }
