@@ -633,6 +633,10 @@
     // ── Notes data ────────────────────────────────────────────
     const notes = [
       {
+        date: 'October 21, 2026',
+        content: `Dear Fiz,\n\nHow lucky am I to spend so many milestones with you. Right by your side. It is a privilege that I get every single day. I'm so so lucky.\n\n- yours`
+      },
+      {
         date: 'October 18, 2026',
         content: `Dear Fiz,\n\nHow lucky am I to spend spring, and the blazing summer with you. I can't wait to spend fall and cozy Christmas with you too :)\n\nTo so many more holidays and seasons and festivities with my girl who makes each and every one feel so special :)`
       },
@@ -858,7 +862,7 @@
     const timer = setInterval(tick, 1000);
 
     // ── Wordle ────────────────────────────────────────────────
-    const TARGET   = 'MERRY';
+    const TARGET   = 'EVENT';
     const MAX_ROWS = 6;
     const COLS     = 5;
 
@@ -977,7 +981,7 @@
           currentCol = 0;
           currentGuess = [];
           if (currentRow >= MAX_ROWS) {
-            setMsg(`The word was ${TARGET} 🎄`, 0);
+            setMsg(`The word was ${TARGET} 🎉`, 0);
             gameOver = true;
           }
         }
