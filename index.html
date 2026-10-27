@@ -567,7 +567,7 @@
     <div id="wordle-keyboard"></div>
   </div>
 
-  <button id="skip-btn" onclick="showNote()">skip wordle</button>
+  <button id="skip-btn" onclick="rejectSkip()">skip wordle</button>
 
   <!-- Note screen -->
   <div class="screen" id="note-screen">
@@ -855,6 +855,17 @@
         menuBtn.classList.add('visible');
         matchaBtn.classList.add('visible');
       }, 50);
+    }
+
+    const SKIP_REJECTIONS = [
+      'nuh uh, go back and do the wordle 🙅‍♀️',
+      'nice try. get back there and guess the word',
+      'no skipping allowed, you know the rules',
+      'absolutely not. the wordle comes first',
+    ];
+    function rejectSkip() {
+      const msg = SKIP_REJECTIONS[Math.floor(Math.random() * SKIP_REJECTIONS.length)];
+      setMsg(msg, 2200);
     }
 
     function tick() {
